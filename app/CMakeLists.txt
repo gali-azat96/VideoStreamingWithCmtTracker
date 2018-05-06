@@ -29,6 +29,18 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
              src/main/cpp/native-lib.cpp )
 
+add_library( # Sets the name of the library.
+          cmt
+
+          # Sets the library as a shared library.
+          SHARED
+
+          # Provides a relative path to your source file(s).
+          src/main/cpp/CMT.cpp )
+
+include_directories(${pathToProject}/app/src/main/cpp)
+set_target_properties(cmt PROPERTIES IMPORTED_LOCATION ${pathToProject}/app/src/main/cpp)
+
 #Addition suggested by Bruno Alexandre Krinski 20160825
 add_library( lib_opencv SHARED IMPORTED )
 
@@ -52,4 +64,5 @@ find_library( # Sets the name of the path variable.
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
-target_link_libraries( native-lib $\{log-lib} lib_opencv)
+target_link_libraries( cmt log lib_opencv)
+target_link_libraries( native-lib cmt)

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.galiazat.diplomtest4opencvimplement.MainActivity">
+    tools:context="com.galiazat.diplomtest4opencvimplement.screen.videoSource.VideoSourceActivity">
 
     <org.opencv.android.JavaCameraView
         android:layout_width="match_parent"
@@ -18,19 +18,10 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:id="@+id/seekbar_value"
-        app:layout_constraintBottom_toTopOf="@id/seek_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="20dp"
         android:text="63"
         android:textSize="30sp"
         android:textColor="#ea125e"/>
-
-    <SeekBar
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:id="@+id/seek_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="10dp"
-        />
 
 </android.support.constraint.ConstraintLayout>
