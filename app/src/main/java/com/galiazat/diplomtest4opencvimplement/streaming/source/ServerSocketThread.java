@@ -1,9 +1,15 @@
 package com.galiazat.diplomtest4opencvimplement.streaming.source;
 
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.util.Log;
+
+import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
 
 import org.opencv.core.Mat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -46,9 +52,9 @@ public class ServerSocketThread extends Thread {
         }
     }
 
-    public void sendMat(Mat mat){
+    public void sendFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame){
         for (InternalServerSocketThread serverSocketThread : internalThreads){
-            serverSocketThread.sendMat(mat);
+            serverSocketThread.sendFrame(sendingFrame);
         }
     }
 
@@ -70,17 +76,24 @@ public class ServerSocketThread extends Thread {
     private class InternalServerSocketThread extends Thread{
         private Socket s = null;
         private OutputStream os = null;
-        volatile private Mat sendingMat = null;
+        volatile private VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame;
+        volatile private ByteArrayOutputStream stream;
         final private Object blockObject = new Object();
 
         InternalServerSocketThread(Socket s) {
             this.s = s;
         }
 
-        void sendMat(Mat mat){
-            sendingMat = mat;
-            if (sendingMat != null){
+        void sendFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame){
+            if (sendingFrame != null){
                 synchronized (blockObject) {
+                    this.sendingFrame = sendingFrame;
+                    YuvImage yuvimage=new YuvImage(sendingFrame.getFrame(), ImageFormat.NV21,
+                            sendingFrame.getFrameWidth(),
+                            sendingFrame.getFrameHeight(),null);
+                    stream = new ByteArrayOutputStream();
+                    yuvimage.compressToJpeg(new Rect(0,0,sendingFrame.getFrameWidth(),
+                            sendingFrame.getFrameHeight()),80,stream);
                     blockObject.notify();
                 }
             }
@@ -99,31 +112,36 @@ public class ServerSocketThread extends Thread {
             if(s !=null){
                 String clientIp = s.getInetAddress().toString().replace("/", "");
                 int clientPort = s.getPort();
-                System.out.println("====client ip====="+clientIp);
+                Log.d("ip","====client ip====="+clientIp);
                 System.out.println("====client port====="+clientPort);
                 try {
                     s.setKeepAlive(true);
                     os = s.getOutputStream();
                     while(!isInterrupted()){
-                        Mat copy = sendingMat;
+                        VideoSourcePreviewView.VideoSourceListener.SendingFrame copy;
+                        ByteArrayOutputStream baos;
+                        synchronized (blockObject) {
+                            copy = sendingFrame;
+                            baos = stream;
+                        }
                         if (copy != null){
-                            int channels = copy.channels();
                             DataOutputStream dos = new DataOutputStream(os);
-                            dos.writeInt(copy.type());
-                            dos.writeInt(copy.rows());
-                            dos.writeInt(copy.cols());
-                            dos.writeInt(channels);
+                            dos.writeInt(sendingFrame.getPreviewType());
+                            dos.writeInt(sendingFrame.getFrameHeight());
+                            dos.writeInt(sendingFrame.getFrameWidth());
+
+                            byte[] bytes = baos.toByteArray();
+                            int size = bytes.length;
+                            dos.writeInt(size);
                             dos.flush();
-                            System.out.println(copy.height() + "x" + copy.width()
-                                    + "x" + channels);
-                            byte[] matsByte = new byte[copy.height() * copy.width() * channels];
-                            copy.get(0,0, matsByte);
-                            dos.write(matsByte);
+                            dos.write(bytes);
                             //System.out.println("outlength"+mPreview.mFrameBuffer.length);
                             dos.flush();
                         } else {
                             try {
-                                blockObject.wait();
+                                synchronized (blockObject) {
+                                    blockObject.wait();
+                                }
                             } catch (InterruptedException e){
                                 break;
                             }

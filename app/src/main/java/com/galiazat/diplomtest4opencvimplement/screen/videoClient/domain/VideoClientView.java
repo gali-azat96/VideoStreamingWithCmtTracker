@@ -1,5 +1,6 @@
 package com.galiazat.diplomtest4opencvimplement.screen.videoClient.domain;
 
+import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
 import com.galiazat.diplomtest4opencvimplement.screen.base.BaseView;
 
 import org.opencv.core.Mat;
@@ -9,5 +10,5 @@ import org.opencv.core.Mat;
  */
 
 public interface VideoClientView extends BaseView{
-    void showMat(Mat mat);
+    void showFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame);
 }

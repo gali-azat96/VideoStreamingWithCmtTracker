@@ -3,7 +3,9 @@ package com.galiazat.diplomtest4opencvimplement.streaming.client;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 
-import org.opencv.core.Mat;
+import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
+
+import org.opencv.imgcodecs.Imgcodecs;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -37,27 +39,29 @@ public class ClientSocketThread extends Thread {
             DataInputStream is = new DataInputStream(inStream);
             while (!isInterrupted()) {
                 try {
-                    int type = is.readInt();
-                    int rows = is.readInt();
-                    int cols = is.readInt();
-                    int channels = is.readInt();
-                    int size = rows * cols * channels;
-                    byte[] masBytes = new byte[rows * cols * channels];
-                    int len = 0;
-                    while (len < size) {
-                        len += is.read(masBytes, len, size - len);
-                    }
-                    final Mat mat = new Mat(rows, cols, type);
-                    mat.put(0, 0, masBytes);
-                    if (mHandler != null) {
-                        mHandler.post(() -> {
+                    if (is.available() > 0) {
+                        int type = is.readInt();
+                        int height = is.readInt();
+                        int width = is.readInt();
+                        int size = is.readInt();
+                        byte[] masBytes = new byte[size];
+                        int len = 0;
+                        while (len < size) {
+                            len += is.read(masBytes, len, size - len);
+                        }
+                        final VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame =
+                                new VideoSourcePreviewView.VideoSourceListener.SendingFrame(masBytes, type,
+                                        height, width);
+                        if (mHandler != null) {
+                            mHandler.post(() -> {
+                                if (listener != null) {
+                                    listener.onFrameReceived(sendingFrame);
+                                }
+                            });
+                        } else {
                             if (listener != null) {
-                                listener.onMatReceived(mat);
+                                listener.onFrameReceived(sendingFrame);
                             }
-                        });
-                    } else {
-                        if (listener != null) {
-                            listener.onMatReceived(mat);
                         }
                     }
                 } catch (Exception e) {

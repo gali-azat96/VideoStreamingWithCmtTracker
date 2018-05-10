@@ -12,10 +12,10 @@ public class CMT {
 
     public native void FindFeatures(long matAddrGr, long matAddrRgba);
 
-    public native void OpenCMT(long matAddrGr, long matAddrRgba, long x,
+    public native void OpenCMT(long matAddrGray, long x,
                                long y, long w, long h);
 
-    public native void ProcessCMT(long matAddrGr, long matAddrRgba);
+    public native void ProcessCMT(long matAddrGr, long matAddrRgb);
 
     public native void CMTSave(java.lang.String Path);
     public native void CMTLoad(java.lang.String Path);

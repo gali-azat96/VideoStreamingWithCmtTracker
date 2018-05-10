@@ -1,14 +1,10 @@
 package com.galiazat.diplomtest4opencvimplement.screen.videoClient.domain;
 
-import android.os.Handler;
-import android.os.Looper;
-
+import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
 import com.galiazat.diplomtest4opencvimplement.screen.base.BasePresenter;
 import com.galiazat.diplomtest4opencvimplement.streaming.Constants;
 import com.galiazat.diplomtest4opencvimplement.streaming.client.ClientSocketListener;
 import com.galiazat.diplomtest4opencvimplement.streaming.client.ClientSocketThread;
-
-import org.opencv.core.Mat;
 
 import java.io.IOException;
 
@@ -35,9 +31,9 @@ public class VideoClientPresenter extends BasePresenter<VideoClientView, VideoCl
     }
 
     @Override
-    public void onMatReceived(Mat mat) {
+    public void onFrameReceived(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame) {
         if (view != null){
-            view.showMat(mat);
+            view.showFrame(sendingFrame);
         }
     }
 

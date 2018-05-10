@@ -16,9 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".screen.videoSource.VideoSourceActivity"
-            android:screenOrientation="sensorLandscape"/>
-        <activity
             android:name=".screen.splash.SplashActivity"
             android:launchMode="singleInstance">
             <intent-filter>
@@ -28,9 +25,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".screen.videoSource.VideoSourceActivity"
+            android:screenOrientation="sensorLandscape"/>
+        <activity
             android:name=".screen.videoClient.VideoClientActivity"
-            android:label="@string/title_activity_video_client"
-            android:theme="@style/AppTheme"/>
+            android:screenOrientation="sensorLandscape"/>
     </application>
 
 </manifest>

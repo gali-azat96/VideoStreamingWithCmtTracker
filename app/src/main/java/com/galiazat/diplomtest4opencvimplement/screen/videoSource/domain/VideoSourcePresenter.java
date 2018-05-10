@@ -1,10 +1,9 @@
 package com.galiazat.diplomtest4opencvimplement.screen.videoSource.domain;
 
+import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
 import com.galiazat.diplomtest4opencvimplement.screen.base.BasePresenter;
 import com.galiazat.diplomtest4opencvimplement.streaming.Constants;
 import com.galiazat.diplomtest4opencvimplement.streaming.source.ServerSocketThread;
-
-import org.opencv.core.Mat;
 
 /**
  * @author Azat Galiullin.
@@ -23,8 +22,8 @@ public class VideoSourcePresenter extends BasePresenter<VideoSourceView, VideoSo
         serverSocketThread.start();
     }
 
-    public void sendMat(Mat mat){
-        serverSocketThread.sendMat(mat);
+    public void sendFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame){
+        serverSocketThread.sendFrame(sendingFrame);
     }
 
     @Override

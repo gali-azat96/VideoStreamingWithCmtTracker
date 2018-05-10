@@ -13,8 +13,8 @@ extern "C" {
 
 
 JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_FindFeatures(JNIEnv*, jobject, jlong addrGray, jlong addrRgba);
-JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_OpenCMT(JNIEnv*, jobject, jlong addrGray, jlong addrRgba,jlong x, jlong y, jlong width, jlong height);
-JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_ProcessCMT(JNIEnv *env, jobject instance, jlong addrGray, jlong addrRgba);
+JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_OpenCMT(JNIEnv*, jobject, jlong addrGray,jlong x, jlong y, jlong width, jlong height);
+JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_ProcessCMT(JNIEnv *env, jobject instance, jlong addrGray, jlong addrRgb);
 JNIEXPORT jintArray JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_CMTgetRect(JNIEnv *env, jclass type);
 JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_CMTSave(JNIEnv *env, jobject instance, jstring path);
 
@@ -41,7 +41,7 @@ JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_Find
 }
 
 JNIEXPORT void JNICALL
-Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_OpenCMT(JNIEnv*, jobject, jlong addrGray, jlong addrRgba,jlong x, jlong y, jlong width, jlong height) {
+Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_OpenCMT(JNIEnv*, jobject, jlong addrGray, jlong x, jlong y, jlong width, jlong height) {
 
     //	 if (cmt!=NULL)
 //	 {
@@ -61,11 +61,11 @@ Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_OpenCMT(JNIEnv*, jobject, j
 
 
 JNIEXPORT void JNICALL
-Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_ProcessCMT(JNIEnv *env, jobject instance, jlong addrGray, jlong addrRgba) {
+Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_ProcessCMT(JNIEnv *env, jobject instance, jlong addrGray, jlong addrRgb) {
 
     if (!CMTinitiated)
         return;
-    Mat& img  = *(Mat*)addrRgba;
+    Mat& img  = *(Mat*)addrRgb;
     Mat& im_gray  = *(Mat*)addrGray;
 
     cmt->processFrame(im_gray);

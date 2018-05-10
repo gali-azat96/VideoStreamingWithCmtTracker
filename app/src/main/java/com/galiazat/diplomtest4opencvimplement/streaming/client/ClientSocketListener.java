@@ -1,5 +1,7 @@
 package com.galiazat.diplomtest4opencvimplement.streaming.client;
 
+import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
+
 import org.opencv.core.Mat;
 
 /**
@@ -7,5 +9,5 @@ import org.opencv.core.Mat;
  */
 
 public interface ClientSocketListener {
-    void onMatReceived(Mat mat);
+    void onFrameReceived(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame);
 }

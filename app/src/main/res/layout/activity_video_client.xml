@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="com.galiazat.diplomtest4opencvimplement.screen.videoClient.VideoClientActivity">
 
-    <com.galiazat.diplomtest4opencvimplement.custom.VideoPreviewView
+    <com.galiazat.diplomtest4opencvimplement.custom.VideoClientPreviewView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/preview"/>
