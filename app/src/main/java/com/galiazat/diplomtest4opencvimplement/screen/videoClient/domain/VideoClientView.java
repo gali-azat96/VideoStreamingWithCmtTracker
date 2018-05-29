@@ -10,5 +10,5 @@ import org.opencv.core.Mat;
  */
 
 public interface VideoClientView extends BaseView{
-    void showFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame);
+    void showFrame(VideoSourcePreviewView.SendingFrame sendingFrame);
 }

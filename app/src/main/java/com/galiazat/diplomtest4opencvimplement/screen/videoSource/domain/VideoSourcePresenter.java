@@ -1,5 +1,7 @@
 package com.galiazat.diplomtest4opencvimplement.screen.videoSource.domain;
 
+import android.view.SurfaceHolder;
+
 import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
 import com.galiazat.diplomtest4opencvimplement.screen.base.BasePresenter;
 import com.galiazat.diplomtest4opencvimplement.streaming.Constants;
@@ -22,8 +24,8 @@ public class VideoSourcePresenter extends BasePresenter<VideoSourceView, VideoSo
         serverSocketThread.start();
     }
 
-    public void sendFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame){
-        serverSocketThread.sendFrame(sendingFrame);
+    public void sendFrame(byte[] frame){
+        serverSocketThread.sendFrame(frame);
     }
 
     @Override

@@ -49,8 +49,8 @@ public class ClientSocketThread extends Thread {
                         while (len < size) {
                             len += is.read(masBytes, len, size - len);
                         }
-                        final VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame =
-                                new VideoSourcePreviewView.VideoSourceListener.SendingFrame(masBytes, type,
+                        final VideoSourcePreviewView.SendingFrame sendingFrame =
+                                new VideoSourcePreviewView.SendingFrame(masBytes, type,
                                         height, width);
                         if (mHandler != null) {
                             mHandler.post(() -> {

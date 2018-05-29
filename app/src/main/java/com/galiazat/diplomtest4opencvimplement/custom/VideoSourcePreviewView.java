@@ -3,6 +3,7 @@ package com.galiazat.diplomtest4opencvimplement.custom;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.AttributeSet;
+import android.view.SurfaceHolder;
 
 import com.galiazat.diplomtest4opencvimplement.entites.SupportedFormat;
 
@@ -35,7 +36,7 @@ public class VideoSourcePreviewView extends JavaCameraView {
     public void onPreviewFrame(byte[] frame, Camera arg1) {
         super.onPreviewFrame(frame, arg1);
         for (VideoSourceListener listener: listeners){
-            listener.frameReceived(new VideoSourceListener.SendingFrame(frame, previewType, frameHeight, frameWidth));
+            listener.frameReceived(frame);
         }
     }
 
@@ -47,6 +48,14 @@ public class VideoSourcePreviewView extends JavaCameraView {
     public void disableView() {
         super.disableView();
         listeners.clear();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        super.surfaceCreated(holder);
+        for (VideoSourceListener format: listeners){
+            format.surfaceCreated(holder);
+        }
     }
 
     @Override
@@ -77,46 +86,46 @@ public class VideoSourcePreviewView extends JavaCameraView {
     }
 
     public void selectFormat(int index) {
-        supportedPreviewSizes.get(index).setSelected(true);
-        supportedPreviewSizes.get(selectedFormatIndex).setSelected(false);
-        selectedFormatIndex = index;
-        SupportedFormat format = supportedPreviewSizes.get(index);
-        connectCamera(format.getSize().width, format.getSize().height);
+//        supportedPreviewSizes.get(index).setSelected(true);
+//        supportedPreviewSizes.get(selectedFormatIndex).setSelected(false);
+//        selectedFormatIndex = index;
+//        SupportedFormat format = supportedPreviewSizes.get(index);
+        connectCamera(1280, 720);
     }
 
     public interface VideoSourceListener{
-        void frameReceived(SendingFrame frame);
+        void surfaceCreated(SurfaceHolder holder);
+        void frameReceived(byte[] frame);
+    }
 
-        class SendingFrame{
-            private int frameHeight, frameWidth;
-            private int previewType;
-            private byte[] frame;
+    public static class SendingFrame{
+        private int frameHeight, frameWidth;
+        private int previewType;
+        private byte[] frame;
 
-            public SendingFrame(byte[] frame, int previewType,
-                                int frameHeight, int frameWidth) {
-                this.frameHeight = frameHeight;
-                this.frameWidth = frameWidth;
-                this.previewType = previewType;
-                this.frame = frame;
-            }
-
-            public int getFrameHeight() {
-                return frameHeight;
-            }
-
-            public int getFrameWidth() {
-                return frameWidth;
-            }
-
-            public int getPreviewType() {
-                return previewType;
-            }
-
-            public byte[] getFrame() {
-                return frame;
-            }
+        public SendingFrame(byte[] frame, int previewType,
+                            int frameHeight, int frameWidth) {
+            this.frameHeight = frameHeight;
+            this.frameWidth = frameWidth;
+            this.previewType = previewType;
+            this.frame = frame;
         }
 
+        public int getFrameHeight() {
+            return frameHeight;
+        }
+
+        public int getFrameWidth() {
+            return frameWidth;
+        }
+
+        public int getPreviewType() {
+            return previewType;
+        }
+
+        public byte[] getFrame() {
+            return frame;
+        }
     }
 
 }

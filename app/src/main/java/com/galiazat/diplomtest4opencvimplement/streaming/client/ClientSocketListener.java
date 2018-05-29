@@ -9,5 +9,5 @@ import org.opencv.core.Mat;
  */
 
 public interface ClientSocketListener {
-    void onFrameReceived(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame);
+    void onFrameReceived(VideoSourcePreviewView.SendingFrame sendingFrame);
 }

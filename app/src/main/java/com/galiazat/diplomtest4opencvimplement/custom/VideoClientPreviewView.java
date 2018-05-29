@@ -53,7 +53,7 @@ public class VideoClientPreviewView extends SurfaceView {
         listeners.add(listener);
     }
 
-    public void showFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame){
+    public void showFrame(VideoSourcePreviewView.SendingFrame sendingFrame){
         Canvas canvas = getHolder().lockCanvas();
         if (canvas != null) {
             canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR);

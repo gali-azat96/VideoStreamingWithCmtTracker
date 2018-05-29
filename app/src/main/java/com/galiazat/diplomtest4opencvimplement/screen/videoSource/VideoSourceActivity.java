@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -77,10 +78,10 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
         cameraView.setVisibility(View.VISIBLE);
         cameraView.setCvCameraViewListener(this);
-        presenter.startSocket();
+        cameraView.addListener(this);
         setOnTouchListener();
         supportedFormatsList.setVisibility(View.GONE);
-
+        presenter.startSocket();
     }
 
     @Override
@@ -149,6 +150,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     @Override
     public void onCameraViewStarted(int width, int height) {
+        cameraView.selectFormat(0);
     }
 
     @Override
@@ -248,11 +250,6 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         }
     }
 
-    @Override
-    public void frameReceived(SendingFrame sendingFrame) {
-        presenter.sendFrame(sendingFrame);
-    }
-
     public void onSupportedFormatClicked(int index) {
         int selected = cameraView.getSelectedFormatIndex();
         cameraView.selectFormat(index);
@@ -261,5 +258,15 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
                 R.anim.bottom_down);
         supportedFormatsList.startAnimation(bottomUp);
         supportedFormatsList.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void frameReceived(byte[] frame) {
+        presenter.sendFrame(frame);
     }
 }

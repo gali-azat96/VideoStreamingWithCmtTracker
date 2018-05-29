@@ -6,8 +6,7 @@ import android.graphics.YuvImage;
 import android.util.Log;
 
 import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
-
-import org.opencv.core.Mat;
+import com.galiazat.diplomtest4opencvimplement.streaming.codecs.VideoEncoderThread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -16,6 +15,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,19 +23,23 @@ import java.util.List;
  * @author Azat Galiullin.
  */
 
-public class ServerSocketThread extends Thread {
+public class ServerSocketThread extends Thread implements VideoEncoderThread.VideoCoderListener {
 
     private int port;
     private List<InternalServerSocketThread> internalThreads = new ArrayList<>();
     private ServerSocket ss;
+    private VideoEncoderThread videoEncoderThread;
 
     public ServerSocketThread(int port) {
         this.port = port;
+        videoEncoderThread = new VideoEncoderThread(this);
     }
 
     @Override
     public void run() {
         try {
+            videoEncoderThread.prepare();
+            videoEncoderThread.start();
             ss = new ServerSocket(port);
             while (!isInterrupted()){
                 try {
@@ -52,14 +56,9 @@ public class ServerSocketThread extends Thread {
         }
     }
 
-    public void sendFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame){
-        for (InternalServerSocketThread serverSocketThread : internalThreads){
-            serverSocketThread.sendFrame(sendingFrame);
-        }
-    }
-
     @Override
     public void interrupt() {
+        videoEncoderThread.release();
         for (InternalServerSocketThread serverSocketThread : internalThreads){
             serverSocketThread.interrupt();
         }
@@ -73,10 +72,26 @@ public class ServerSocketThread extends Thread {
         super.interrupt();
     }
 
+    public void sendFrame(byte[] frame){
+        videoEncoderThread.setFrameData(frame);
+    }
+
+    @Override
+    public void frameCoded(ByteBuffer byteBuffer) {
+        byte[] bytes = new byte[byteBuffer.limit()];
+        byteBuffer.get(bytes, 0, byteBuffer.limit());
+        VideoSourcePreviewView.SendingFrame sendingFrame =
+                new VideoSourcePreviewView.SendingFrame(bytes,
+                        1, 720, 1280);
+        for (InternalServerSocketThread serverSocketThread : internalThreads){
+            serverSocketThread.sendFrame(sendingFrame);
+        }
+    }
+
     private class InternalServerSocketThread extends Thread{
         private Socket s = null;
         private OutputStream os = null;
-        volatile private VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame;
+        volatile private VideoSourcePreviewView.SendingFrame sendingFrame;
         volatile private ByteArrayOutputStream stream;
         final private Object blockObject = new Object();
 
@@ -84,7 +99,7 @@ public class ServerSocketThread extends Thread {
             this.s = s;
         }
 
-        void sendFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame){
+        void sendFrame(VideoSourcePreviewView.SendingFrame sendingFrame){
             if (sendingFrame != null){
                 synchronized (blockObject) {
                     this.sendingFrame = sendingFrame;
@@ -118,7 +133,7 @@ public class ServerSocketThread extends Thread {
                     s.setKeepAlive(true);
                     os = s.getOutputStream();
                     while(!isInterrupted()){
-                        VideoSourcePreviewView.VideoSourceListener.SendingFrame copy;
+                        VideoSourcePreviewView.SendingFrame copy;
                         ByteArrayOutputStream baos;
                         synchronized (blockObject) {
                             copy = sendingFrame;

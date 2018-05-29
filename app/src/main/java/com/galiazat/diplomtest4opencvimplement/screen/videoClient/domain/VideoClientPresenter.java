@@ -31,7 +31,7 @@ public class VideoClientPresenter extends BasePresenter<VideoClientView, VideoCl
     }
 
     @Override
-    public void onFrameReceived(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame) {
+    public void onFrameReceived(VideoSourcePreviewView.SendingFrame sendingFrame) {
         if (view != null){
             view.showFrame(sendingFrame);
         }

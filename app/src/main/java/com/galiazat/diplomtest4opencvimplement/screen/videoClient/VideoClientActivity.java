@@ -181,7 +181,7 @@ public class VideoClientActivity extends BaseActivity<VideoClientPresenter>
     }
 
     @Override
-    public void showFrame(VideoSourcePreviewView.VideoSourceListener.SendingFrame sendingFrame) {
+    public void showFrame(VideoSourcePreviewView.SendingFrame sendingFrame) {
         previewView.showFrame(sendingFrame);
     }
 
