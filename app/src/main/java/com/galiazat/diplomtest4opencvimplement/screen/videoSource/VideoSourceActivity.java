@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.galiazat.diplomtest4opencvimplement.R;
 import com.galiazat.diplomtest4opencvimplement.UtilRectangle;
 import com.galiazat.diplomtest4opencvimplement.cmt.CMT;
+import com.galiazat.diplomtest4opencvimplement.cmt.CmtThread;
 import com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView;
 import com.galiazat.diplomtest4opencvimplement.screen.base.BaseActivity;
 import com.galiazat.diplomtest4opencvimplement.screen.videoSource.domain.VideoSourcePresenter;
@@ -36,12 +37,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.galiazat.diplomtest4opencvimplement.cmt.CmtThread.REDUCE_HEIGHT;
+import static com.galiazat.diplomtest4opencvimplement.cmt.CmtThread.REDUCE_WIDTH;
+
 public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         implements CameraBridgeViewBase.CvCameraViewListener2, VideoSourceView, VideoSourcePreviewView.VideoSourceListener {
 
     public final static String TAG = VideoSourceActivity.class.getSimpleName();
-    private final static int STATE_IDLE = 0;
-    private final static int STATE_CMT = 1;
 
     @BindView(R.id.java_camera_view)
     VideoSourcePreviewView cameraView;
@@ -52,16 +54,11 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     private SupportedFormatsAdapter adapter;
 
-    private Size size;
     private UtilRectangle utilRectangle = new UtilRectangle();
+    private boolean isCurrentRectSended = true;
     private boolean isFinished = false;
 
-    double heightCoef;
-    double widthCoef;
-
-    private int state = STATE_IDLE;
-
-    CMT cmt;
+    private CmtThread cmtThread;
 
     public static void start(Activity activity){
         Intent intent = new Intent(activity, VideoSourceActivity.class);
@@ -82,6 +79,9 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         setOnTouchListener();
         supportedFormatsList.setVisibility(View.GONE);
         presenter.startSocket();
+
+        cmtThread = new CmtThread();
+        cmtThread.start();
     }
 
     @Override
@@ -114,6 +114,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
                     case MotionEvent.ACTION_UP: {
                         utilRectangle.addPoint(point);
                         isFinished = utilRectangle.isAreaNotEqualsZero();
+                        isCurrentRectSended = false;
                         return true;
                     }
                 }
@@ -146,61 +147,41 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         if (cameraView != null){
             cameraView.disableView();
         }
+        cmtThread.interrupt();
     }
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-        cameraView.selectFormat(0);
+//        cameraView.selectFormat(0);
     }
 
     @Override
     public void onCameraViewStopped() {
-        size = null;
+
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
         Mat mat = inputFrame.rgba();
-        size = mat.size();
+        Mat gray = inputFrame.gray();
 
         int viewHeight = cameraView.getHeight();
         int viewWidth = cameraView.getWidth();
-        double matHeight = size.height;
-        double matWidth = size.width;
-        heightCoef = matHeight / (viewHeight * 1.0);
-        widthCoef = matWidth / (viewWidth * 1.0);
-
 
         if (isFinished){
-            Mat mGray = Reduce(inputFrame.gray());
-            if (state == STATE_IDLE) {
-                Log.i(TAG,"TAG: case START_CMT");
-                double w = mGray.width();
-                double h = mGray.height();
-
-                Rect _trackedBox = utilRectangle.toOpenCvRect();
-
-                Log.i("TAG", "TAG: CMT START DEFINED: " + _trackedBox.x / 2 + " "
-                        + _trackedBox.y / 2 + " " + _trackedBox.width / 2 + " "
-                        + _trackedBox.height / 2);
-
-                double px = (w) / (double) (viewWidth);
-                double py = (h) / (double) (viewHeight);
-                //
-                cmt = new CMT();
-                cmt.OpenCMT(mGray.getNativeObjAddr(),
-                        (long) (_trackedBox.x * px),
-                        (long) (_trackedBox.y * py),
-                        (long) (_trackedBox.width * px),
-                        (long) (_trackedBox.height * py));
-                state = STATE_CMT;
+            if (!isCurrentRectSended){
+                cmtThread.startTracking(mat, gray, utilRectangle, viewHeight, viewWidth);
+                isCurrentRectSended = true;
             } else {
-                Mat mRgba2 = Reduce(mat);
-                cmt.ProcessCMT(mGray.getNativeObjAddr(), mRgba2.getNativeObjAddr());
-                double px = (double) mat.width() / (double) mRgba2.width();
-                double py = (double) mat.height() / (double) mRgba2.height();
-                int[] l = CMT.getRect();
+                cmtThread.trackObject(mat, gray);
+                int[] l = cmtThread.getRes();
+
+                double w = mat.width();
+                double h = mat.height();
+
+                double px = w / REDUCE_WIDTH;
+                double py = h / REDUCE_HEIGHT;
                 if (l != null) {
                     Point topLeft = new Point(l[0] * px, l[1] * py);
                     Point topRight = new Point(l[2] * px, l[3] * py);
@@ -216,22 +197,9 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
                     Imgproc.line(mat, bottomLeft, topLeft, new Scalar(255, 255,
                             255), 3);
                 }
-                mRgba2.release();
             }
-            mGray.release();
-            return mat;
         }
         return mat;
-
-    }
-
-    static final int WIDTH = 400 ;
-    static final int HEIGHT =240;
-
-    private static Mat Reduce(Mat m) {
-        Mat dst = new Mat();
-        Imgproc.resize(m, dst, new org.opencv.core.Size(WIDTH, HEIGHT));
-        return dst;
     }
 
     @OnClick(R.id.menu_button)
@@ -269,4 +237,5 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
     public void frameReceived(byte[] frame) {
         presenter.sendFrame(frame);
     }
+
 }

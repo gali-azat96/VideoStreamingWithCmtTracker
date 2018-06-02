@@ -74,18 +74,18 @@ public class VideoEncoderThread extends Thread{
 
     @Override
     public void run() {
-        mRunning = true;
-        try {
-            while (mRunning) {
-                encode();
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            release();
-        }
+//        mRunning = true;
+//        try {
+//            while (mRunning) {
+//                encode();
+//            }
+//        }
+//        catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        finally {
+//            release();
+//        }
     }
 
     private void encode() {
@@ -140,9 +140,9 @@ public class VideoEncoderThread extends Thread{
     public void release() {
         listener = null;
         mRunning = false;
-        mEncoder.signalEndOfInputStream();
-        mEncoder.stop();
-        mEncoder.release();
+//        mEncoder.signalEndOfInputStream();
+//        mEncoder.stop();
+//        mEncoder.release();
     }
 
     /**
