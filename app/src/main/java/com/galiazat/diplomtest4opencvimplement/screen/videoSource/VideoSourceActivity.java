@@ -95,31 +95,28 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
     }
 
     private void setOnTouchListener(){
-        cameraView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Point point = new Point((int) ((event.getX() - cameraView.getX())),
-                        (int) (event.getY() - cameraView.getY()));
-                switch (event.getAction()){
-                    case MotionEvent.ACTION_DOWN: {
-                        isFinished = false;
-                        utilRectangle = new UtilRectangle();
-                        utilRectangle.addPoint(point);
-                        return true;
-                    }
-                    case MotionEvent.ACTION_MOVE: {
-                        utilRectangle.addPoint(point);
-                        return true;
-                    }
-                    case MotionEvent.ACTION_UP: {
-                        utilRectangle.addPoint(point);
-                        isFinished = utilRectangle.isAreaNotEqualsZero();
-                        isCurrentRectSended = false;
-                        return true;
-                    }
+        cameraView.setOnTouchListener((v, event) -> {
+            Point point = new Point((int) ((event.getX() - cameraView.getX())),
+                    (int) (event.getY() - cameraView.getY()));
+            switch (event.getAction()){
+                case MotionEvent.ACTION_DOWN: {
+                    isFinished = false;
+                    utilRectangle = new UtilRectangle();
+                    utilRectangle.addPoint(point);
+                    return true;
                 }
-                return false;
+                case MotionEvent.ACTION_MOVE: {
+                    utilRectangle.addPoint(point);
+                    return true;
+                }
+                case MotionEvent.ACTION_UP: {
+                    utilRectangle.addPoint(point);
+                    isFinished = utilRectangle.isAreaNotEqualsZero();
+                    isCurrentRectSended = false;
+                    return true;
+                }
             }
+            return false;
         });
     }
 
@@ -152,7 +149,6 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-//        cameraView.selectFormat(0);
     }
 
     @Override
