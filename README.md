@@ -13,3 +13,6 @@ Video streaming app wich supporting tracking for the selected area on screen
 4. Connect to stream from other device, using ip address of first device
 ## To do 
 1. Implement streaming with WebRTC
+# Links
+1. CMT https://www.gnebehay.com/code/
+2. OpenCV https://opencv.org
