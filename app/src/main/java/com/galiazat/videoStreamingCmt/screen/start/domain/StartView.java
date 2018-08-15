@@ -1,4 +1,4 @@
-package com.galiazat.videoStreamingCmt.screen.splash.domain;
+package com.galiazat.videoStreamingCmt.screen.start.domain;
 
 import com.galiazat.videoStreamingCmt.screen.base.BaseView;
 
@@ -6,7 +6,7 @@ import com.galiazat.videoStreamingCmt.screen.base.BaseView;
  * @author Azat Galiullin.
  */
 
-public interface SplashView extends BaseView{
+public interface StartView extends BaseView{
     void openSourceScreen();
 
     void openClientScreen(String ip);

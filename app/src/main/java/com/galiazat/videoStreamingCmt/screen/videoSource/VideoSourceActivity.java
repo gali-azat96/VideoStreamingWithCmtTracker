@@ -14,8 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.animation.Animation;
@@ -23,12 +21,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.galiazat.videoStreamingCmt.R;
-import com.galiazat.videoStreamingCmt.UtilRectangle;
-import com.galiazat.videoStreamingCmt.cmt.CMT;
-import com.galiazat.videoStreamingCmt.cmt.CmtThread;
 import com.galiazat.videoStreamingCmt.custom.VideoSourcePreviewView;
 import com.galiazat.videoStreamingCmt.screen.base.BaseActivity;
-import com.galiazat.videoStreamingCmt.screen.splash.SplashActivity;
+import com.galiazat.videoStreamingCmt.screen.start.StartActivity;
 import com.galiazat.videoStreamingCmt.screen.videoSource.domain.VideoSourcePresenter;
 import com.galiazat.videoStreamingCmt.screen.videoSource.domain.VideoSourceView;
 import com.galiazat.videoStreamingCmt.screen.videoSource.list.SupportedFormatsAdapter;
@@ -36,18 +31,10 @@ import com.galiazat.videoStreamingCmt.streaming.IpUtils;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static com.galiazat.videoStreamingCmt.cmt.CmtThread.REDUCE_HEIGHT;
-import static com.galiazat.videoStreamingCmt.cmt.CmtThread.REDUCE_WIDTH;
 
 public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         implements CameraBridgeViewBase.CvCameraViewListener2, VideoSourceView, VideoSourcePreviewView.VideoSourceListener {
@@ -227,7 +214,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE){
             if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Snackbar.make(cameraView, "Need camera permission", Snackbar.LENGTH_LONG).show();
-                SplashActivity.start(this);
+                StartActivity.start(this);
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.galiazat.videoStreamingCmt.screen.splash.domain;
+package com.galiazat.videoStreamingCmt.screen.start.domain;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -15,7 +15,7 @@ import org.opencv.android.OpenCVLoader;
  * @author Azat Galiullin.
  */
 
-public class SplashPresenter extends BasePresenter<SplashView, SplashModel>{
+public class StartPresenter extends BasePresenter<StartView, StartModel>{
 
     private final static String TAG_OpenCV_INIT = "OpenCV_init";
 
@@ -26,8 +26,8 @@ public class SplashPresenter extends BasePresenter<SplashView, SplashModel>{
     private InitOpenCvThread initOpenCvThread;
     private String ip;
 
-    public SplashPresenter() {
-        super(new SplashModel());
+    public StartPresenter() {
+        super(new StartModel());
     }
 
     public void initOpenCv(){
@@ -104,7 +104,7 @@ public class SplashPresenter extends BasePresenter<SplashView, SplashModel>{
                 }
                 switch (status){
                     case BaseLoaderCallback.SUCCESS:{
-                        new Handler(Looper.getMainLooper()).post(SplashPresenter.this::onOpenCvInitialized);
+                        new Handler(Looper.getMainLooper()).post(StartPresenter.this::onOpenCvInitialized);
                         break;
                     }
                     default:{

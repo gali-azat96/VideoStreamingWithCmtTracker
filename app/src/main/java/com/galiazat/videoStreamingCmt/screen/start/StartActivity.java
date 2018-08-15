@@ -1,17 +1,15 @@
-package com.galiazat.videoStreamingCmt.screen.splash;
+package com.galiazat.videoStreamingCmt.screen.start;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.EditText;
 
 import com.galiazat.videoStreamingCmt.R;
 import com.galiazat.videoStreamingCmt.screen.base.BaseActivity;
-import com.galiazat.videoStreamingCmt.screen.splash.domain.SplashPresenter;
-import com.galiazat.videoStreamingCmt.screen.splash.domain.SplashView;
+import com.galiazat.videoStreamingCmt.screen.start.domain.StartPresenter;
+import com.galiazat.videoStreamingCmt.screen.start.domain.StartView;
 import com.galiazat.videoStreamingCmt.screen.videoClient.VideoClientActivity;
 import com.galiazat.videoStreamingCmt.screen.videoSource.VideoSourceActivity;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;
@@ -27,14 +25,14 @@ import butterknife.OnClick;
  * @author Azat Galiullin.
  */
 
-public class SplashActivity extends BaseActivity<SplashPresenter>
-                            implements SplashView{
+public class StartActivity extends BaseActivity<StartPresenter>
+                            implements StartView {
 
     @BindView(R.id.ip_input)
     EditText ipInput;
 
     public static void start(Activity activity) {
-        Intent intent = new Intent(activity, SplashActivity.class);
+        Intent intent = new Intent(activity, StartActivity.class);
         activity.startActivity(intent);
         activity.finish();
     }
@@ -64,8 +62,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter>
     }
 
     @Override
-    protected SplashPresenter createPresenter() {
-        return new SplashPresenter();
+    protected StartPresenter createPresenter() {
+        return new StartPresenter();
     }
 
     @OnClick(R.id.video_source)

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">VideoStreamingWithCmtTracker</string>
-    <string name="title_activity_video_client">VideoClientActivity</string>
+    <string name="start_stream">Start video stream</string>
+    <string name="watch_stream">Watch video stream</string>
 </resources>

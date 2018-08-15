@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">VideoStreamingWithCmtTracker</string>
+    <string name="start_stream">Начать трансляцию</string>
+    <string name="watch_stream">Смотреть трансляцию</string>
+</resources>
