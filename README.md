@@ -8,7 +8,7 @@ Video streaming app wich supporting tracking for the selected area on screen
 5. Build this project using Android Studio.
 ## Use
 1. Run app on your device.
-2. Tap on "Start stream" button.
+2. Tap on "Start video stream" button.
 3. Select area in screen with preview.
 4. Connect to stream from other device, using ip address of first device
 ## To do 
