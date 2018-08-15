@@ -12,18 +12,18 @@ using namespace cv;
 extern "C" {
 
 
-JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_FindFeatures(JNIEnv*, jobject, jlong addrGray, jlong addrRgba);
-JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_OpenCMT(JNIEnv*, jobject, jlong addrGray,jlong x, jlong y, jlong width, jlong height);
-JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_ProcessCMT(JNIEnv *env, jobject instance, jlong addrGray, jlong addrRgb);
-JNIEXPORT jintArray JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_CMTgetRect(JNIEnv *env, jclass type);
-JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_CMTSave(JNIEnv *env, jobject instance, jstring path);
+JNIEXPORT void JNICALL Java_com_galiazat_videoStreamingCmt_cmt_CMT_FindFeatures(JNIEnv*, jobject, jlong addrGray, jlong addrRgba);
+JNIEXPORT void JNICALL Java_com_galiazat_videoStreamingCmt_cmt_CMT_OpenCMT(JNIEnv*, jobject, jlong addrGray,jlong x, jlong y, jlong width, jlong height);
+JNIEXPORT void JNICALL Java_com_galiazat_videoStreamingCmt_cmt_CMT_ProcessCMT(JNIEnv *env, jobject instance, jlong addrGray, jlong addrRgb);
+JNIEXPORT jintArray JNICALL Java_com_galiazat_videoStreamingCmt_cmt_CMT_CMTgetRect(JNIEnv *env, jclass type);
+JNIEXPORT void JNICALL Java_com_galiazat_videoStreamingCmt_cmt_CMT_CMTSave(JNIEnv *env, jobject instance, jstring path);
 
 bool CMTinitiated=false;
 CMT  *cmt = new CMT();
 
 long rect[4];
 
-JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_FindFeatures(JNIEnv*, jobject, jlong addrGray, jlong addrRgba)
+JNIEXPORT void JNICALL Java_com_galiazat_videoStreamingCmt_cmt_CMT_FindFeatures(JNIEnv*, jobject, jlong addrGray, jlong addrRgba)
 {
     Mat& mGr  = *(Mat*)addrGray;
     Mat& mRgb = *(Mat*)addrRgba;
@@ -39,7 +39,7 @@ JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_Find
 }
 
 JNIEXPORT void JNICALL
-Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_OpenCMT(JNIEnv*, jobject, jlong addrGray, jlong x, jlong y, jlong width, jlong height) {
+Java_com_galiazat_videoStreamingCmt_cmt_CMT_OpenCMT(JNIEnv*, jobject, jlong addrGray, jlong x, jlong y, jlong width, jlong height) {
 
     //	 if (cmt!=NULL)
 //	 {
@@ -59,7 +59,7 @@ Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_OpenCMT(JNIEnv*, jobject, j
 
 
 JNIEXPORT void JNICALL
-Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_ProcessCMT(JNIEnv *env, jobject instance, jlong addrGray, jlong addrRgb) {
+Java_com_galiazat_videoStreamingCmt_cmt_CMT_ProcessCMT(JNIEnv *env, jobject instance, jlong addrGray, jlong addrRgb) {
 
     if (!CMTinitiated)
         return;
@@ -81,7 +81,7 @@ Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_ProcessCMT(JNIEnv *env, job
 
 
 JNIEXPORT jintArray JNICALL
-Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_getRect(JNIEnv *env, jclass type) {
+Java_com_galiazat_videoStreamingCmt_cmt_CMT_getRect(JNIEnv *env, jclass type) {
 
     if (!CMTinitiated)
         return NULL;
@@ -112,7 +112,7 @@ Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_getRect(JNIEnv *env, jclass
 }
 
 JNIEXPORT void JNICALL
-Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_CMTSave(JNIEnv *env, jobject instance, jstring path) {
+Java_com_galiazat_videoStreamingCmt_cmt_CMT_CMTSave(JNIEnv *env, jobject instance, jstring path) {
 
     if (!CMTinitiated)
         return ;
@@ -128,7 +128,7 @@ Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_CMTSave(JNIEnv *env, jobjec
 
 
 JNIEXPORT void JNICALL
-Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_CMTLoad(JNIEnv *env, jobject instance, jstring path) {
+Java_com_galiazat_videoStreamingCmt_cmt_CMT_CMTLoad(JNIEnv *env, jobject instance, jstring path) {
 
     const char *str = env->GetStringUTFChars(path, 0);
 

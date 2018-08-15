@@ -2,6 +2,7 @@ package com.galiazat.videoStreamingCmt.screen.videoSource;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -63,12 +64,6 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     private SupportedFormatsAdapter adapter;
 
-    private UtilRectangle utilRectangle = new UtilRectangle();
-    private boolean isCurrentRectSended = true;
-    private boolean isFinished = false;
-
-    private CmtThread cmtThread;
-
     public static void start(Activity activity){
         Intent intent = new Intent(activity, VideoSourceActivity.class);
         activity.startActivity(intent);
@@ -87,10 +82,6 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         cameraView.addListener(this);
         setOnTouchListener();
         supportedFormatsList.setVisibility(View.GONE);
-        presenter.startSocket();
-
-        cmtThread = new CmtThread();
-        cmtThread.start();
         checkAndRequestCameraPermission();
     }
 
@@ -104,30 +95,12 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         return new VideoSourcePresenter();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setOnTouchListener(){
-        cameraView.setOnTouchListener((v, event) -> {
-            Point point = new Point((int) ((event.getX() - cameraView.getX())),
-                    (int) (event.getY() - cameraView.getY()));
-            switch (event.getAction()){
-                case MotionEvent.ACTION_DOWN: {
-                    isFinished = false;
-                    utilRectangle = new UtilRectangle();
-                    utilRectangle.addPoint(point);
-                    return true;
-                }
-                case MotionEvent.ACTION_MOVE: {
-                    utilRectangle.addPoint(point);
-                    return true;
-                }
-                case MotionEvent.ACTION_UP: {
-                    utilRectangle.addPoint(point);
-                    isFinished = utilRectangle.isAreaNotEqualsZero();
-                    isCurrentRectSended = false;
-                    return true;
-                }
-            }
-            return false;
-        });
+        cameraView.setOnTouchListener((v, event) ->
+                presenter.onRectDrawing(event.getX() - cameraView.getX(),
+                        event.getY() - cameraView.getY(),
+                        event.getAction()));
     }
 
     @Override
@@ -154,7 +127,6 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         if (cameraView != null){
             cameraView.disableView();
         }
-        cmtThread.interrupt();
     }
 
     @Override
@@ -168,44 +140,8 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
-        Mat mat = inputFrame.rgba();
-        Mat gray = inputFrame.gray();
-
-        int viewHeight = cameraView.getHeight();
-        int viewWidth = cameraView.getWidth();
-
-        if (isFinished){
-            if (!isCurrentRectSended){
-                cmtThread.startTracking(mat, gray, utilRectangle, viewHeight, viewWidth);
-                isCurrentRectSended = true;
-            } else {
-                cmtThread.trackObject(mat, gray);
-                int[] l = cmtThread.getRes();
-
-                double w = mat.width();
-                double h = mat.height();
-
-                double px = w / REDUCE_WIDTH;
-                double py = h / REDUCE_HEIGHT;
-                if (l != null) {
-                    Point topLeft = new Point(l[0] * px, l[1] * py);
-                    Point topRight = new Point(l[2] * px, l[3] * py);
-                    Point bottomLeft = new Point(l[4] * px, l[5] * py);
-                    Point bottomRight = new Point(l[6] * px, l[7] * py);
-
-                    Imgproc.line(mat, topLeft, topRight, new Scalar(255, 255,
-                            255), 3);
-                    Imgproc.line(mat, topRight, bottomRight, new Scalar(255,
-                            255, 255), 3);
-                    Imgproc.line(mat, bottomRight, bottomLeft, new Scalar(255,
-                            255, 255), 3);
-                    Imgproc.line(mat, bottomLeft, topLeft, new Scalar(255, 255,
-                            255), 3);
-                }
-            }
-        }
-        return mat;
+        return presenter.onFrameFromCameraReceived(inputFrame, cameraView.getWidth(),
+                cameraView.getHeight());
     }
 
     @OnClick(R.id.menu_button)
@@ -239,6 +175,11 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     }
 
+
+    /**
+     * frame to sending for client without object tracking
+     * @param frame
+     */
     @Override
     public void frameReceived(byte[] frame) {
         presenter.sendFrame(frame);
