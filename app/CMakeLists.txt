@@ -3,8 +3,8 @@
 
 # Sets the minimum version of CMake required to build the native library.
 
-set(pathToProject /home/azat/StudioProjects/diplom)
-set(pathToOpenCv /home/azat/opencv/opencv-3.4.1-android-sdk/sdk)
+set(pathToProject /home/azat/StudioProjects/VideoStreamingWithCmtTracker)
+set(pathToOpenCv /home/azat/opencv-3.4.1-android-sdk)
 
 cmake_minimum_required(VERSION 3.4.1)
 

@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.galiazat.diplomtest4opencvimplement.screen.videoSource.VideoSourceActivity">
+    tools:context="com.galiazat.videoStreamingCmt.screen.videoSource.VideoSourceActivity">
 
-    <com.galiazat.diplomtest4opencvimplement.custom.VideoSourcePreviewView
+    <com.galiazat.videoStreamingCmt.custom.VideoSourcePreviewView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:show_fps="true"

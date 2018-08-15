@@ -23,8 +23,6 @@ CMT  *cmt = new CMT();
 
 long rect[4];
 
-
-
 JNIEXPORT void JNICALL Java_com_galiazat_diplomtest4opencvimplement_cmt_CMT_FindFeatures(JNIEnv*, jobject, jlong addrGray, jlong addrRgba)
 {
     Mat& mGr  = *(Mat*)addrGray;

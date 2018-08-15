@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">DiplomTest4OpenCvImplement</string>
+    <string name="app_name">VideoStreamingWithCmtTracker</string>
     <string name="title_activity_video_client">VideoClientActivity</string>
 </resources>
