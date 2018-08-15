@@ -1,6 +1,6 @@
 # VideoStreamingWithCmtTracker
-Video streaming app wich supporting tracking for the selected area on screen 
-##Install
+Video streaming app wich supporting tracking for the selected area on screen
+## Install
 1. Download OpenCv library from https://opencv.org/releases.html
 2. Find in downloaded archive folder "sdk"
 3. Unzip it on your computer
@@ -11,5 +11,5 @@ Video streaming app wich supporting tracking for the selected area on screen
 2. Tap on "Start stream" button.
 3. Select area in screen with preview.
 4. Connect to stream from other device, using ip address of first device
-##To do 
+## To do 
 1. Implement streaming with WebRTC
