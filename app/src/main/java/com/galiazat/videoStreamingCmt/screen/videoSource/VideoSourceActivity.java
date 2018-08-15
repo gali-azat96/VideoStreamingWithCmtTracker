@@ -138,6 +138,9 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     }
 
+    /**
+     * @return - a modified frame which needs to be displayed on the screen.
+     */
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         return presenter.onFrameFromCameraReceived(inputFrame, cameraView.getWidth(),
@@ -155,6 +158,22 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
             }
             Animation bottomUp = AnimationUtils.loadAnimation(this,
                     R.anim.bottom_up);
+            bottomUp.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    supportedFormatsList.setLayoutManager(new LinearLayoutManager(VideoSourceActivity.this));
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
             supportedFormatsList.startAnimation(bottomUp);
             supportedFormatsList.setVisibility(View.VISIBLE);
         }
@@ -177,7 +196,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
 
     /**
-     * frame to sending for client without object tracking
+     * frame to sending for network client without object tracking
      * @param frame
      */
     @Override
