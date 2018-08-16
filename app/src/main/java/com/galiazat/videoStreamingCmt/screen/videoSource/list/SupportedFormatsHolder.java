@@ -34,14 +34,11 @@ public class SupportedFormatsHolder extends RecyclerView.ViewHolder {
                      int pos) {
         title.setText(supportedFormat.getSize().width + "x" + supportedFormat.getSize().height);
         selectedIcon.setVisibility(supportedFormat.isSelected() ? View.VISIBLE : View.GONE);
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!supportedFormat.isSelected()){
-                    VideoSourceActivity activity = activityWeakReference.get();
-                    if (activity != null){
-                        activity.onSupportedFormatClicked(pos);
-                    }
+        itemView.setOnClickListener(v -> {
+            if (!supportedFormat.isSelected()) {
+                VideoSourceActivity activity = activityWeakReference.get();
+                if (activity != null) {
+                    activity.onSupportedFormatClicked(pos);
                 }
             }
         });

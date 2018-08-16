@@ -48,7 +48,7 @@ public class SupportedFormatsAdapter extends RecyclerView.Adapter<SupportedForma
         return supportedFormats.size();
     }
 
-    public void selectedChanged(int selected, int newSelected) {
+    public void onSelectedChanged(int selected, int newSelected) {
         notifyItemChanged(selected);
         notifyItemChanged(newSelected);
     }

@@ -22,6 +22,7 @@ public class VideoSourcePreviewView extends JavaCameraView {
     private int frameHeight, frameWidth;
     private int previewType;
     private List<SupportedFormat> supportedPreviewSizes;
+    private SupportedPreviewSizeAvailableListener previewSizeAvalaibleListener;
     private int selectedFormatIndex;
 
     public VideoSourcePreviewView(Context context, int cameraId) {
@@ -48,6 +49,7 @@ public class VideoSourcePreviewView extends JavaCameraView {
     public void disableView() {
         super.disableView();
         listeners.clear();
+        previewSizeAvalaibleListener = null;
     }
 
     @Override
@@ -66,7 +68,10 @@ public class VideoSourcePreviewView extends JavaCameraView {
         frameHeight = parameters.getPreviewSize().height;
         frameWidth = parameters.getPreviewSize().width;
 
-        supportedPreviewSizes = SupportedFormat.convertToSupportedFormatList(parameters.getSupportedPictureSizes());
+        supportedPreviewSizes = SupportedFormat.convertToSupportedFormatList(parameters.getSupportedPreviewSizes());
+        if (previewSizeAvalaibleListener != null){
+            previewSizeAvalaibleListener.onSupportedPreviewSizeAvailable(supportedPreviewSizes);
+        }
         for (int i=0; i<supportedPreviewSizes.size(); i++){
             SupportedFormat format = supportedPreviewSizes.get(i);
             if (format.getSize().height == frameHeight && format.getSize().width == frameWidth){
@@ -85,17 +90,28 @@ public class VideoSourcePreviewView extends JavaCameraView {
         return selectedFormatIndex;
     }
 
+    public void setPreviewSizeAvalaibleListener(SupportedPreviewSizeAvailableListener previewSizeAvalaibleListener) {
+        this.previewSizeAvalaibleListener = previewSizeAvalaibleListener;
+        if (previewSizeAvalaibleListener != null && supportedPreviewSizes != null){
+            previewSizeAvalaibleListener.onSupportedPreviewSizeAvailable(supportedPreviewSizes);
+        }
+    }
+
     public void selectFormat(int index) {
-//        supportedPreviewSizes.get(index).setSelected(true);
-//        supportedPreviewSizes.get(selectedFormatIndex).setSelected(false);
-//        selectedFormatIndex = index;
-//        SupportedFormat format = supportedPreviewSizes.get(index);
-        connectCamera(1280, 720);
+        supportedPreviewSizes.get(index).setSelected(true);
+        supportedPreviewSizes.get(selectedFormatIndex).setSelected(false);
+        selectedFormatIndex = index;
+        SupportedFormat format = supportedPreviewSizes.get(index);
+        connectCamera(format.getSize().width, format.getSize().height);
     }
 
     public interface VideoSourceListener{
         void surfaceCreated(SurfaceHolder holder);
         void frameReceived(byte[] frame);
+    }
+
+    public interface SupportedPreviewSizeAvailableListener {
+        void onSupportedPreviewSizeAvailable(List<SupportedFormat> supportedFormats);
     }
 
     public static class SendingFrame{

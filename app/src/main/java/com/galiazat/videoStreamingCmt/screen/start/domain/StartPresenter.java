@@ -2,6 +2,7 @@ package com.galiazat.videoStreamingCmt.screen.start.domain;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.galiazat.videoStreamingCmt.App;

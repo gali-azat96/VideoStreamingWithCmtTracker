@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.galiazat.videoStreamingCmt.R;
 import com.galiazat.videoStreamingCmt.custom.VideoSourcePreviewView;
+import com.galiazat.videoStreamingCmt.entites.SupportedFormat;
 import com.galiazat.videoStreamingCmt.screen.base.BaseActivity;
 import com.galiazat.videoStreamingCmt.screen.start.StartActivity;
 import com.galiazat.videoStreamingCmt.screen.videoSource.domain.VideoSourcePresenter;
@@ -32,12 +33,14 @@ import com.galiazat.videoStreamingCmt.streaming.IpUtils;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Mat;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
-        implements CameraBridgeViewBase.CvCameraViewListener2, VideoSourceView, VideoSourcePreviewView.VideoSourceListener {
+        implements CameraBridgeViewBase.CvCameraViewListener2, VideoSourceView, VideoSourcePreviewView.VideoSourceListener, VideoSourcePreviewView.SupportedPreviewSizeAvailableListener {
 
     public final static String TAG = VideoSourceActivity.class.getSimpleName();
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 224;
@@ -51,7 +54,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     private SupportedFormatsAdapter adapter;
 
-    public static void start(Activity activity){
+    public static void start(Activity activity) {
         Intent intent = new Intent(activity, VideoSourceActivity.class);
         activity.startActivity(intent);
         activity.finish();
@@ -67,8 +70,9 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         cameraView.setVisibility(View.VISIBLE);
         cameraView.setCvCameraViewListener(this);
         cameraView.addListener(this);
-        setOnTouchListener();
+        cameraView.setPreviewSizeAvalaibleListener(this);
         supportedFormatsList.setVisibility(View.GONE);
+        setOnTouchListener();
         checkAndRequestCameraPermission();
     }
 
@@ -83,7 +87,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setOnTouchListener(){
+    private void setOnTouchListener() {
         cameraView.setOnTouchListener((v, event) ->
                 presenter.onRectDrawing(event.getX() - cameraView.getX(),
                         event.getY() - cameraView.getY(),
@@ -103,7 +107,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
     @Override
     protected void onPause() {
         super.onPause();
-        if (cameraView != null){
+        if (cameraView != null) {
             cameraView.disableView();
         }
     }
@@ -111,7 +115,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (cameraView != null){
+        if (cameraView != null) {
             cameraView.disableView();
         }
     }
@@ -135,41 +139,28 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
     }
 
     @OnClick(R.id.menu_button)
-    public void onMenuClicked(){
-        if (supportedFormatsList.getVisibility() != View.VISIBLE){
-            if (adapter == null){
-                adapter = new SupportedFormatsAdapter(this);
-                adapter.setSupportedFormats(cameraView.getSupportedPreviewSizes());
-                supportedFormatsList.setAdapter(adapter);
-                supportedFormatsList.setLayoutManager(new LinearLayoutManager(this));
+    public void onMenuClicked() {
+        if (supportedFormatsList.getVisibility() != View.VISIBLE) {
+            if (adapter != null){
+                supportedFormatsList.setAlpha(1);
+                Animation bottomUp = AnimationUtils.loadAnimation(this,
+                        R.anim.bottom_up);
+                supportedFormatsList.startAnimation(bottomUp);
+                supportedFormatsList.setVisibility(View.VISIBLE);
             }
-            Animation bottomUp = AnimationUtils.loadAnimation(this,
-                    R.anim.bottom_up);
-            bottomUp.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    supportedFormatsList.setLayoutManager(new LinearLayoutManager(VideoSourceActivity.this));
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-            supportedFormatsList.startAnimation(bottomUp);
-            supportedFormatsList.setVisibility(View.VISIBLE);
+        } else {
+            closePreviewSizesList();
         }
     }
 
     public void onSupportedFormatClicked(int index) {
         int selected = cameraView.getSelectedFormatIndex();
         cameraView.selectFormat(index);
-        adapter.selectedChanged(selected, index);
+        adapter.onSelectedChanged(selected, index);
+        closePreviewSizesList();
+    }
+
+    private void closePreviewSizesList(){
         Animation bottomUp = AnimationUtils.loadAnimation(this,
                 R.anim.bottom_down);
         supportedFormatsList.startAnimation(bottomUp);
@@ -184,6 +175,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
 
     /**
      * frame to sending for network client without object tracking
+     *
      * @param frame
      */
     @Override
@@ -202,7 +194,7 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
         }
     }
 
-    private boolean isCameraPermissionGranted(){
+    private boolean isCameraPermissionGranted() {
         int cameraPermissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.CAMERA);
         return cameraPermissionCheck == PackageManager.PERMISSION_GRANTED;
@@ -211,11 +203,19 @@ public class VideoSourceActivity extends BaseActivity<VideoSourcePresenter>
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE){
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Snackbar.make(cameraView, "Need camera permission", Snackbar.LENGTH_LONG).show();
                 StartActivity.start(this);
             }
         }
+    }
+
+    @Override
+    public void onSupportedPreviewSizeAvailable(List<SupportedFormat> supportedFormats) {
+        adapter = new SupportedFormatsAdapter(this);
+        adapter.setSupportedFormats(supportedFormats);
+        supportedFormatsList.setAdapter(adapter);
+        supportedFormatsList.setLayoutManager(new LinearLayoutManager(this));
     }
 }
